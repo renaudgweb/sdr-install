@@ -51,7 +51,6 @@ apt_install() {
 		          automake \
 		          ccze \
 		          bmon \
-		          gqrx-sdr \
 		          cmake \
 		          build-essential \
 		          libusb-1.0-0-dev \
@@ -63,6 +62,7 @@ apt_install() {
 		          rtl-433 \
 		          udev \
 		          lsof \
+		          gqrx-sdr \
 		          htop"
 
 	# Installation des paquets APT
