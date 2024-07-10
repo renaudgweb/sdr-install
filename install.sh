@@ -78,16 +78,16 @@ all_install() {
 
 	# Installation de la libacars2
 	cd ~/Documents/Perso/APPS/sdr/
-	wget https://github.com/szpajder/libacars/archive/refs/tags/v2.1.4.tar.gz
-	tar xfvz v2.1.4.tar.gz
-	cd libacars-2.1.4/
+	wget https://github.com/szpajder/libacars/archive/refs/tags/v2.2.0.tar.gz
+	tar xfvz v2.2.0.tar.gz
+	cd libacars-2.2.0/
 	mkdir build
 	cd build
 	cmake ../
 	make
 	sudo make install
 	sudo ldconfig
-	rm ~/Documents/Perso/APPS/sdr/v2.1.4.tar.gz
+	rm ~/Documents/Perso/APPS/sdr/v2.2.0.tar.gz
 	printf "La libacars2 est installée ✅️\n"
 
 	# Installation d'ACARSDEC
@@ -105,15 +105,15 @@ all_install() {
 
 	# Installation de Multimon-ng
 	cd ~/Documents/Perso/APPS/sdr/
-	wget https://github.com/EliasOenal/multimon-ng/archive/refs/tags/1.2.0.tar.gz
-	tar xfvz 1.2.0.tar.gz
-	cd multimon-ng-1.2.0/
+	wget https://github.com/EliasOenal/multimon-ng/archive/refs/tags/1.3.1.tar.gz
+	tar xfvz 1.3.1.tar.gz
+	cd multimon-ng-1.3.1/
 	mkdir build
 	cd build
 	cmake ..
 	make
 	sudo make install
-	rm ~/Documents/Perso/APPS/sdr/1.2.0.tar.gz
+	rm ~/Documents/Perso/APPS/sdr/1.3.1.tar.gz
 	printf "Multimon-ng est installé ✅️\n"
 
 	# Installation de Kalibrate
