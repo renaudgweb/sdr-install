@@ -41,8 +41,9 @@ install_packages() {
 
     local packages=(
         git autoconf libtool automake ccze bmon cmake build-essential 
-        libusb-1.0-0-dev rtl-sdr librtlsdr-dev zlib1g-dev libxml2-dev 
-        sox rtl-433 udev lsof gqrx-sdr htop libjansson-dev
+        libusb-1.0-0-dev rtl-sdr librtlsdr-dev zlib1g-dev
+        libsndfile1-dev libxml2-dev lame libsox-fmt-mp3 rtl-433 udev
+        lsof qrx-sdr htop libjansson-dev libav-tools sox oggfwd
     )
 
     sudo apt install -y "${packages[@]}"
@@ -148,6 +149,13 @@ install_kalibrate_rtl() {
     echo "Kalibrate est installé ✅️ (version: $(kal -v))\n"
 }
 
+install_pifmrds() {
+    git clone https://github.com/ChristopheJacquet/PiFmRds.git
+    cd PiFmRds/src
+    make clean
+    make
+}
+
 main_install() {
     install_packages
     mkdir -p $HOME/Documents/Perso/APPS/sdr
@@ -155,6 +163,7 @@ main_install() {
     install_acarsdec
     install_multimon_ng
     install_kalibrate_rtl
+    install_pifmrds
 
     sudo wget -O /etc/udev/rules.d/rtl-sdr.rules https://raw.githubusercontent.com/osmocom/rtl-sdr/master/rtl-sdr.rules
     sudo udevadm control --reload-rules
