@@ -17,7 +17,7 @@ Version : 0.4
 
 				         _nnnn_                      
 				        dGGGGMMb     ,"""""""""""""".
-				       @p~qp~~qMb    | Linux SDR 📡 |
+                       @p~qp~~qMb    | Linux SDR 📡 |
 				       M|@||@) M|   _;..............'
 				       @,----.JM| -'
 				      JS^\__/  qKL
@@ -91,7 +91,7 @@ download_and_install() {
 }
 
 install_libacars() {
-	local install_dir="~/Documents/Perso/APPS/sdr/libacars"
+	local install_dir="$HOME/Documents/Perso/APPS/sdr/libacars"
     download_and_install "szpajder/libacars" "$install_dir" "libacars.tar.gz"
 
 	mkdir build && cd build
@@ -100,11 +100,11 @@ install_libacars() {
 	sudo make install
 	sudo ldconfig
 
-	echo "La libacars2 est installée ✅️ (version: $(libacars --version))\n"
+	echo "libacars2 est installée ✅️ (version: $(decode_acars_apps -v))\n"
 }
 
 install_acarsdec() {
-	local install_dir="~/Documents/Perso/APPS/sdr/acarsdec"
+	local install_dir="$HOME/Documents/Perso/APPS/sdr/acarsdec"
     download_and_install "TLeconte/acarsdec" "$install_dir" "acarsdec.tar.gz"
 
 	mkdir build && cd build
@@ -112,11 +112,11 @@ install_acarsdec() {
 	make
 	sudo make install
 
-	echo "ACARSDec est installée ✅️ (version: $(libacars --version))\n"
+	echo "ACARSDec est installée ✅️ (version: $(acarsdec --version))\n"
 }
 
 install_multimon_ng() {
-	local install_dir="~/Documents/Perso/APPS/sdr/multimon-ng"
+	local install_dir="$HOME/Documents/Perso/APPS/sdr/multimon-ng"
     download_and_install "EliasOenal/multimon-ng" "$install_dir" "multimon-ng.tar.gz"
 
 	mkdir build && cd build
@@ -124,7 +124,7 @@ install_multimon_ng() {
 	make
 	sudo make install
 
-	echo "Multimon-ng est installée ✅️ (version: $(libacars --version))\n"
+	echo "Multimon-ng est installée ✅️ (version: $(multimon-ng -V))\n"
 }
 
 install_kalibrate_rtl() {
@@ -145,12 +145,12 @@ install_kalibrate_rtl() {
     ./bootstrap && CXXFLAGS='-W -Wall -O3' ./configure && make
     rm "$install_dir/master.zip"
 
-    echo "Kalibrate est installé ✅️ (version: $(libacars --version))\n"
+    echo "Kalibrate est installé ✅️ (version: $(kal -v))\n"
 }
 
 main_install() {
     install_packages
-    mkdir -p ~/Documents/Perso/APPS/sdr
+    mkdir -p $HOME/Documents/Perso/APPS/sdr
     install_libacars
     install_acarsdec
     install_multimon_ng
