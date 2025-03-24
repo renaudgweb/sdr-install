@@ -19,6 +19,4 @@ Ce script est destiné à un usage éducatif et de développement uniquement.
 
 **Auteur :** Renaud G.
 
-**Version :** 0.1
-
-**Contact :** renaudgweb@gmail.com
+**Version :** 0.2
