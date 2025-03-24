@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 
 #
-#
 # Script d'installation de paquets & configuration SDR
-#
-# Version : 0.3
-#
 #
 # Quitte le programme si une commande échoue
 set -o errexit
@@ -17,7 +13,7 @@ set -o pipefail
 clear
 cat << "EOF"
 Renaud G.
-Version : 0.3
+Version : 0.4
 
 				         _nnnn_                      
 				        dGGGGMMb     ,"""""""""""""".
@@ -46,7 +42,7 @@ install_packages() {
     local packages=(
         git autoconf libtool automake ccze bmon cmake build-essential 
         libusb-1.0-0-dev rtl-sdr librtlsdr-dev zlib1g-dev libxml2-dev 
-        sox rtl-433 udev lsof gqrx-sdr htop
+        sox rtl-433 udev lsof gqrx-sdr htop libjansson-dev
     )
 
     sudo apt install -y "${packages[@]}"
@@ -104,7 +100,7 @@ install_libacars() {
 	sudo make install
 	sudo ldconfig
 
-	echo "La libacars2 est installée ✅️\n"
+	echo "La libacars2 est installée ✅️ (version: $(libacars --version))\n"
 }
 
 install_acarsdec() {
@@ -116,7 +112,7 @@ install_acarsdec() {
 	make
 	sudo make install
 
-	echo "ACARSDec est installée ✅️\n"
+	echo "ACARSDec est installée ✅️ (version: $(libacars --version))\n"
 }
 
 install_multimon_ng() {
@@ -128,7 +124,7 @@ install_multimon_ng() {
 	make
 	sudo make install
 
-	echo "Multimon-ng est installée ✅️\n"
+	echo "Multimon-ng est installée ✅️ (version: $(libacars --version))\n"
 }
 
 install_kalibrate_rtl() {
@@ -149,7 +145,7 @@ install_kalibrate_rtl() {
     ./bootstrap && CXXFLAGS='-W -Wall -O3' ./configure && make
     rm "$install_dir/master.zip"
 
-    echo "Kalibrate est installé ✅️"
+    echo "Kalibrate est installé ✅️ (version: $(libacars --version))\n"
 }
 
 main_install() {
@@ -159,6 +155,12 @@ main_install() {
     install_acarsdec
     install_multimon_ng
     install_kalibrate_rtl
+
+    sudo wget -O /etc/udev/rules.d/rtl-sdr.rules https://raw.githubusercontent.com/osmocom/rtl-sdr/master/rtl-sdr.rules
+    sudo udevadm control --reload-rules
+	sudo udevadm trigger
+	usermod -aG plugdev ${SUDO_USER:-$USER}
+
     sudo apt autoremove -y
     echo "Installation terminée ✅️"
 }
