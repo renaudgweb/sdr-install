@@ -4,7 +4,7 @@
 #
 # Script d'installation de paquets & configuration SDR
 #
-# Version : 0.2
+# Version : 0.3
 #
 #
 # Quitte le programme si une commande échoue
@@ -17,7 +17,7 @@ set -o pipefail
 clear
 cat << "EOF"
 Renaud G.
-Version : 0.2
+Version : 0.3
 
 				         _nnnn_                      
 				        dGGGGMMb     ,"""""""""""""".
@@ -39,254 +39,154 @@ Version : 0.2
 
 EOF
 
-apt_install() {
-	# Mise à jour APT
-	sudo apt update && sudo apt upgrade -y
-	echo "Les paquets APT sont à jour ✅️\n"
+install_packages() {
+    sudo apt update && sudo apt upgrade
+    echo "Les paquets APT sont à jour ✅️"
 
-	# Liste des paquets APT à installer
-	packages_apt="git \
-		          autoconf \
-		          libtool \
-		          automake \
-		          ccze \
-		          bmon \
-		          cmake \
-		          build-essential \
-		          libusb-1.0-0-dev \
-		          rtl-sdr \
-		          librtlsdr-dev \
-		          zlib1g-dev \
-		          libxml2-dev \
-		          sox \
-		          rtl-433 \
-		          udev \
-		          lsof \
-		          gqrx-sdr \
-		          htop"
+    local packages=(
+        git autoconf libtool automake ccze bmon cmake build-essential 
+        libusb-1.0-0-dev rtl-sdr librtlsdr-dev zlib1g-dev libxml2-dev 
+        sox rtl-433 udev lsof gqrx-sdr htop
+    )
 
-	# Installation des paquets APT
-	sudo apt install $packages_apt -y
-	echo "Les paquets APT sont installés ✅️\n"
+    sudo apt install -y "${packages[@]}"
+    echo "Les paquets APT sont installés ✅️"
 }
 
-libacars_install() {
-	# Définition des variables
-	INSTALL_DIR="~/Documents/Perso/APPS/sdr/libacars"
-	TMP_DIR="/tmp/libacars_install"
-	ARCHIVE_NAME="libacars.tar.gz"
+download_and_install() {
+    local repo=$1
+    local install_dir=$2
+    local tarball_name=$3
 
-	# Création du répertoire temporaire
-	mkdir -p "$TMP_DIR"
-	cd "$TMP_DIR"
+    # Créer le répertoire d'installation s'il n'existe pas
+    if [ ! -d "$install_dir" ]; then
+        mkdir -p "$install_dir"
+    fi
 
-	# Récupération du lien de téléchargement de la dernière version
-	TARBALL_URL=$(curl -s https://api.github.com/repos/szpajder/libacars/releases/latest | grep '"tarball_url"' | cut -d '"' -f 4)
+    local tmp_dir=$(mktemp -d)
+    local tarball_url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" | grep '"tarball_url"' | cut -d '"' -f 4)
 
-	# Vérification si l'URL est bien récupérée
-	if [[ -z "$TARBALL_URL" ]]; then
-	    echo "Erreur : Impossible de récupérer le lien de téléchargement."
-	    exit 1
-	fi
+    if [[ -z "$tarball_url" ]]; then
+        echo "Erreur : Impossible de récupérer le lien de téléchargement."
+        exit 1
+    fi
 
-	# Téléchargement de l'archive
-	echo "Téléchargement de libacars..."
-	wget -q "$TARBALL_URL" -O "$ARCHIVE_NAME"
+    # Télécharger le fichier tarball
+    if ! wget -q "$tarball_url" -O "$tmp_dir/$tarball_name"; then
+        echo "Erreur : échec du téléchargement du tarball."
+        exit 1
+    fi
 
-	# Suppression de l'ancienne installation si elle existe
-	if [[ -d "$INSTALL_DIR" ]]; then
-	    echo "Suppression de l'ancienne installation..."
-	    rm -rf "$INSTALL_DIR"
-	fi
+    # Extraire l'archive
+    local extracted_dir=$(tar -xzf "$tmp_dir/$tarball_name" -C "$tmp_dir" | grep -o '^[^/]*' | head -n 1)
 
-	# Extraction de l'archive
-	echo "Extraction de l'archive..."
-	tar -xzf "$ARCHIVE_NAME"
+    if [[ -z "$extracted_dir" ]]; then
+        echo "Erreur : Impossible d'extraire l'archive."
+        exit 1
+    fi
 
-	# Trouver le dossier extrait (qui a un nom dynamique)
-	EXTRACTED_DIR=$(ls -d libacars-*/ 2>/dev/null | head -n 1)
+    # Supprimer l'ancien répertoire d'installation et déplacer les fichiers extraits
+    rm -rf "$install_dir"
+    mv "$tmp_dir/$extracted_dir" "$install_dir"
+    cd "$install_dir"
 
-	# Vérification si l'extraction s'est bien déroulée
-	if [[ -z "$EXTRACTED_DIR" ]]; then
-	    echo "Erreur : Impossible de trouver le dossier extrait."
-	    exit 1
-	fi
+    # Nettoyage après installation
+    rm -rf "$tmp_dir"
+}
 
-	# Déplacement vers le répertoire d'installation
-	mv "$EXTRACTED_DIR" "$INSTALL_DIR"
+install_libacars() {
+	local install_dir="~/Documents/Perso/APPS/sdr/libacars"
+    download_and_install "szpajder/libacars" "$install_dir" "libacars.tar.gz"
 
-	cd "$INSTALL_DIR"
-
-	mkdir build
-	cd build
+	mkdir build && cd build
 	cmake ../
 	make
 	sudo make install
 	sudo ldconfig
 
-	# Nettoyage des fichiers temporaires
-	rm -rf "$TMP_DIR"
-
 	echo "La libacars2 est installée ✅️\n"
 }
 
-acarsdec_install() {
-	# Définition des variables
-	INSTALL_DIR="~/Documents/Perso/APPS/sdr/acarsdec"
-	TMP_DIR="/tmp/acarsdec_install"
-	ARCHIVE_NAME="acarsdec.tar.gz"
+install_acarsdec() {
+	local install_dir="~/Documents/Perso/APPS/sdr/acarsdec"
+    download_and_install "TLeconte/acarsdec" "$install_dir" "acarsdec.tar.gz"
 
-	# Création du répertoire temporaire
-	mkdir -p "$TMP_DIR"
-	cd "$TMP_DIR"
-
-	# Récupération du lien de téléchargement de la dernière version
-	TARBALL_URL=$(curl -s https://api.github.com/repos/TLeconte/acarsdec/releases/latest | grep '"tarball_url"' | cut -d '"' -f 4)
-
-	# Vérification si l'URL est bien récupérée
-	if [[ -z "$TARBALL_URL" ]]; then
-	    echo "Erreur : Impossible de récupérer le lien de téléchargement."
-	    exit 1
-	fi
-
-	# Téléchargement de l'archive
-	echo "Téléchargement de acarsdec..."
-	wget -q "$TARBALL_URL" -O "$ARCHIVE_NAME"
-
-	# Suppression de l'ancienne installation si elle existe
-	if [[ -d "$INSTALL_DIR" ]]; then
-	    echo "Suppression de l'ancienne installation..."
-	    rm -rf "$INSTALL_DIR"
-	fi
-
-	# Extraction de l'archive
-	echo "Extraction de l'archive..."
-	tar -xzf "$ARCHIVE_NAME"
-
-	# Trouver le dossier extrait (qui a un nom dynamique)
-	EXTRACTED_DIR=$(ls -d acarsdec-*/ 2>/dev/null | head -n 1)
-
-	# Vérification si l'extraction s'est bien déroulée
-	if [[ -z "$EXTRACTED_DIR" ]]; then
-	    echo "Erreur : Impossible de trouver le dossier extrait."
-	    exit 1
-	fi
-
-	# Déplacement vers le répertoire d'installation
-	mv "$EXTRACTED_DIR" "$INSTALL_DIR"
-
-	cd "$INSTALL_DIR"
-
-	mkdir build
-	cd build
+	mkdir build && cd build
 	cmake .. -Drtl=ON
 	make
 	sudo make install
 
-	# Nettoyage des fichiers temporaires
-	rm -rf "$TMP_DIR"
-
 	echo "ACARSDec est installée ✅️\n"
 }
 
-multimon-ng_install() {
-	# Définition des variables
-	INSTALL_DIR="~/Documents/Perso/APPS/sdr/multimon-ng"
-	TMP_DIR="/tmp/multimon-ng_install"
-	ARCHIVE_NAME="multimon-ng.tar.gz"
+install_multimon_ng() {
+	local install_dir="~/Documents/Perso/APPS/sdr/multimon-ng"
+    download_and_install "EliasOenal/multimon-ng" "$install_dir" "multimon-ng.tar.gz"
 
-	# Création du répertoire temporaire
-	mkdir -p "$TMP_DIR"
-	cd "$TMP_DIR"
-
-	# Récupération du lien de téléchargement de la dernière version
-	TARBALL_URL=$(curl -s https://api.github.com/repos/EliasOenal/multimon-ng/releases/latest | grep '"tarball_url"' | cut -d '"' -f 4)
-
-	# Vérification si l'URL est bien récupérée
-	if [[ -z "$TARBALL_URL" ]]; then
-	    echo "Erreur : Impossible de récupérer le lien de téléchargement."
-	    exit 1
-	fi
-
-	# Téléchargement de l'archive
-	echo "Téléchargement de multimon-ng..."
-	wget -q "$TARBALL_URL" -O "$ARCHIVE_NAME"
-
-	# Suppression de l'ancienne installation si elle existe
-	if [[ -d "$INSTALL_DIR" ]]; then
-	    echo "Suppression de l'ancienne installation..."
-	    rm -rf "$INSTALL_DIR"
-	fi
-
-	# Extraction de l'archive
-	echo "Extraction de l'archive..."
-	tar -xzf "$ARCHIVE_NAME"
-
-	# Trouver le dossier extrait (qui a un nom dynamique)
-	EXTRACTED_DIR=$(ls -d multimon-ng-*/ 2>/dev/null | head -n 1)
-
-	# Vérification si l'extraction s'est bien déroulée
-	if [[ -z "$EXTRACTED_DIR" ]]; then
-	    echo "Erreur : Impossible de trouver le dossier extrait."
-	    exit 1
-	fi
-
-	# Déplacement vers le répertoire d'installation
-	mv "$EXTRACTED_DIR" "$INSTALL_DIR"
-
-	cd "$INSTALL_DIR"
-
-	mkdir build
-	cd build
+	mkdir build && cd build
 	cmake ..
 	make
 	sudo make install
 
-	# Nettoyage des fichiers temporaires
-	rm -rf "$TMP_DIR"
-
 	echo "Multimon-ng est installée ✅️\n"
 }
 
-kalibrate-rtl_install() {
-	cd ~/Documents/Perso/APPS/sdr/
-	wget https://github.com/steve-m/kalibrate-rtl/archive/refs/heads/master.zip
-	unzip master.zip
-	cd kalibrate-rtl-master
-	./bootstrap && CXXFLAGS='-W -Wall -O3' ./configure && make
-	rm ~/Documents/Perso/APPS/sdr/master.zip
-	echo "Kalibrate est installé ✅️\n"
+install_kalibrate_rtl() {
+    local install_dir="$HOME/Documents/Perso/APPS/sdr/kalibrate-rtl"
+    
+    # Créer le répertoire s'il n'existe pas
+    mkdir -p "$install_dir"
+    cd "$install_dir"
+    
+    # Télécharger le fichier zip
+    if ! wget https://github.com/steve-m/kalibrate-rtl/archive/refs/heads/master.zip -O "$install_dir/master.zip"; then
+        echo "Erreur : échec du téléchargement."
+        exit 1
+    fi
+    
+    unzip master.zip
+    cd kalibrate-rtl-master
+    ./bootstrap && CXXFLAGS='-W -Wall -O3' ./configure && make
+    rm "$install_dir/master.zip"
+
+    echo "Kalibrate est installé ✅️"
 }
 
-all_install() {
-	apt_install;
-	mkdir ~/Documents/Perso/APPS/sdr/
-	libacars_install;
-	acarsdec_install;
-	multimon-ng_install;
-	kalibrate-rtl_install;
-	sudo apt autoremove -y
-	echo "Les mises à jour sont installés ✅️\n"
-
-	while true
-	do
-	    echo "The script is finished ✅️\nMake your choice: [R]eboot🔄, or [Q]uit🚪 : "
-	    read -r REPLY
-	    case $REPLY in
-	        [Rr]* ) sudo reboot; break;;
-	        [Qq]* ) echo "Bye 👋"; exit;;
-	        * ) echo "⛔️Enter one of these letters: R, or Q";;
-	    esac
-	done
+main_install() {
+    install_packages
+    mkdir -p ~/Documents/Perso/APPS/sdr
+    install_libacars
+    install_acarsdec
+    install_multimon_ng
+    install_kalibrate_rtl
+    sudo apt autoremove -y
+    echo "Installation terminée ✅️"
 }
 
-while true
-do
-    echo "Make your choice: [Y]es✔️, or [N]o❌ : "
+prompt_choice() {
+    local prompt=$1
+    local choice
+    while true; do
+        echo "$prompt"
+        read -r choice
+        case $choice in
+            [Yy]* ) return 0;;
+            [Nn]* ) echo "Bye 👋"; exit;;
+            * ) echo "⛔️Entrez Y ou N";;
+        esac
+    done
+}
+
+# Demande initiale pour commencer l'installation
+prompt_choice "Voulez-vous continuer ? [Y]es✔️, ou [N]o❌ : " && main_install
+
+# Demande pour reboot ou quitter
+while true; do
+    echo "Installation terminée ✅️. [R]ebooter ou [Q]uitter ?"
     read -r REPLY
     case $REPLY in
-        [Yy]* ) all_install; break;;
-        [Nn]* ) echo "Bye 👋"; exit;;
-        * ) echo "⛔️Enter one of these letters: Y or N";;
+        [Rr]* ) sudo reboot; break;;
+        [Qq]* ) echo "Bye 👋"; exit;;
+        * ) echo "⛔️Entrez R ou Q";;
     esac
 done
