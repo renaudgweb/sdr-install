@@ -86,7 +86,6 @@ download_and_install() {
     rm -rf "$install_dir"
     mv "$tmp_dir/$extracted_dir" "$install_dir"
     cd "$install_dir"
-
     # Nettoyage après installation
     rm -rf "$tmp_dir"
 }
@@ -100,7 +99,6 @@ install_libacars() {
 	make
 	sudo make install
 	sudo ldconfig
-
 	echo "libacars2 est installée ✅️ (version: $(decode_acars_apps -v))\n"
 }
 
@@ -112,7 +110,6 @@ install_acarsdec() {
 	cmake .. -Drtl=ON
 	make
 	sudo make install
-
 	echo "ACARSDec est installée ✅️ (version: $(acarsdec --version))\n"
 }
 
@@ -124,7 +121,6 @@ install_multimon_ng() {
 	cmake ..
 	make
 	sudo make install
-
 	echo "Multimon-ng est installée ✅️ (version: $(multimon-ng -V))\n"
 }
 
@@ -145,15 +141,16 @@ install_kalibrate_rtl() {
     cd kalibrate-rtl-master
     ./bootstrap && CXXFLAGS='-W -Wall -O3' ./configure && make
     rm "$install_dir/master.zip"
-
     echo "Kalibrate est installé ✅️ (version: $(kal -v))\n"
 }
 
 install_pifmrds() {
+    cd $HOME/Documents/Perso/APPS/sdr
     git clone https://github.com/ChristopheJacquet/PiFmRds.git
     cd PiFmRds/src
     make clean
     make
+    echo "PiFMRDS est installé ✅️\n"
 }
 
 main_install() {
@@ -169,6 +166,7 @@ main_install() {
     sudo udevadm control --reload-rules
 	sudo udevadm trigger
 	usermod -aG plugdev ${SUDO_USER:-$USER}
+    echo "rtl-sdr rules installées ✅️\n"
 
     sudo apt autoremove -y
     echo "Installation terminée ✅️"
