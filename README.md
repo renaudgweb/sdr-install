@@ -1,9 +1,9 @@
-# sdr-install
+#📡 sdr-install
 sdr linux installation
 
-## Utilisation
+##🚀 Utilisation
 
-1. Donnez les permissions d'exécution au script :
+1. 🛠️ Donnez les permissions d'exécution au script :
 
 `sudo chmod +x install.sh`
 
@@ -11,12 +11,12 @@ sdr linux installation
 
 `sudo ./install.sh`
 
-## Avertissement
+##⚠️ Avertissement
 
 Ce script est destiné à un usage éducatif et de développement uniquement.
 
 ---
 
-**Auteur :** Renaud G.
+👤**Auteur :** Renaud G.
 
-**Version :** 1.0
+📌**Version :** 1.0
