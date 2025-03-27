@@ -17,7 +17,7 @@ Version : 1.0
 
 				         _nnnn_                      
 				        dGGGGMMb     ,"""""""""""""".
-                       @p~qp~~qMb    | Linux SDR 📡 |
+				       @p~qp~~qMb    | Linux SDR 📡 |
 				       M|@||@) M|   _;..............'
 				       @,----.JM| -'
 				      JS^\__/  qKL
