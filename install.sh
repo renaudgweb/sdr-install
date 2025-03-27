@@ -13,7 +13,7 @@ set -o pipefail
 clear
 cat << "EOF"
 Renaud G.
-Version : 0.4
+Version : 1.0
 
 				         _nnnn_                      
 				        dGGGGMMb     ,"""""""""""""".
@@ -91,7 +91,7 @@ download_and_install() {
 }
 
 install_libacars() {
-	local install_dir="$HOME/Documents/Perso/APPS/sdr/libacars"
+	local install_dir="$HOME/Documents/sdr/libacars"
     download_and_install "szpajder/libacars" "$install_dir" "libacars.tar.gz"
 
 	mkdir build && cd build
@@ -103,7 +103,7 @@ install_libacars() {
 }
 
 install_acarsdec() {
-	local install_dir="$HOME/Documents/Perso/APPS/sdr/acarsdec"
+	local install_dir="$HOME/Documents/sdr/acarsdec"
     download_and_install "TLeconte/acarsdec" "$install_dir" "acarsdec.tar.gz"
 
 	mkdir build && cd build
@@ -114,7 +114,7 @@ install_acarsdec() {
 }
 
 install_multimon_ng() {
-	local install_dir="$HOME/Documents/Perso/APPS/sdr/multimon-ng"
+	local install_dir="$HOME/Documents/sdr/multimon-ng"
     download_and_install "EliasOenal/multimon-ng" "$install_dir" "multimon-ng.tar.gz"
 
 	mkdir build && cd build
@@ -125,18 +125,15 @@ install_multimon_ng() {
 }
 
 install_kalibrate_rtl() {
-    local install_dir="$HOME/Documents/Perso/APPS/sdr/kalibrate-rtl"
-    
+    local install_dir="$HOME/Documents/sdr/kalibrate-rtl"
     # Créer le répertoire s'il n'existe pas
     mkdir -p "$install_dir"
     cd "$install_dir"
-    
     # Télécharger le fichier zip
     if ! wget https://github.com/steve-m/kalibrate-rtl/archive/refs/heads/master.zip -O "$install_dir/master.zip"; then
         echo "Erreur : échec du téléchargement."
         exit 1
     fi
-    
     unzip master.zip
     cd kalibrate-rtl-master
     ./bootstrap && CXXFLAGS='-W -Wall -O3' ./configure && make
@@ -145,7 +142,7 @@ install_kalibrate_rtl() {
 }
 
 install_pifmrds() {
-    cd $HOME/Documents/Perso/APPS/sdr
+    cd $HOME/Documents/sdr
     git clone https://github.com/ChristopheJacquet/PiFmRds.git
     cd PiFmRds/src
     make clean
@@ -153,22 +150,25 @@ install_pifmrds() {
     echo "PiFMRDS est installé ✅️\n"
 }
 
+udev_install() {
+    sudo wget -O /etc/udev/rules.d/rtl-sdr.rules https://raw.githubusercontent.com/osmocom/rtl-sdr/master/rtl-sdr.rules
+    sudo udevadm control --reload-rules
+    sudo udevadm trigger
+    usermod -aG plugdev ${SUDO_USER:-$USER}
+    echo "rtl-sdr rules installées ✅️\n"
+}
+
 main_install() {
     install_packages
-    mkdir -p $HOME/Documents/Perso/APPS/sdr
+    mkdir -p $HOME/Documents/sdr
     install_libacars
     install_acarsdec
     install_multimon_ng
     install_kalibrate_rtl
     install_pifmrds
+    udev_install
 
-    sudo wget -O /etc/udev/rules.d/rtl-sdr.rules https://raw.githubusercontent.com/osmocom/rtl-sdr/master/rtl-sdr.rules
-    sudo udevadm control --reload-rules
-	sudo udevadm trigger
-	usermod -aG plugdev ${SUDO_USER:-$USER}
-    echo "rtl-sdr rules installées ✅️\n"
-
-    sudo apt autoremove -y
+    sudo apt update && sudo apt -y autoremove && sudo apt -y clean
     echo "Installation terminée ✅️"
 }
 
@@ -191,7 +191,7 @@ prompt_choice "Voulez-vous continuer ? [Y]es✔️, ou [N]o❌ : " && main_insta
 
 # Demande pour reboot ou quitter
 while true; do
-    echo "Installation terminée ✅️. [R]ebooter ou [Q]uitter ?"
+    echo "Installation terminée 🚀. [R]ebooter ou [Q]uitter ?"
     read -r REPLY
     case $REPLY in
         [Rr]* ) sudo reboot; break;;
