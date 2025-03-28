@@ -1,7 +1,7 @@
 # 📡 sdr-install
 
 <p align="center">
-  <img src="ham-tux.jpg" alt="Ham Tux logo" width="300"/>
+  <img src="ham-tux.jpg" alt="Ham Tux logo" width="600"/>
 </p>
 
 <p align="center">
