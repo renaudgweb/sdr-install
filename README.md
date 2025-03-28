@@ -51,7 +51,7 @@ Voici la liste des paquets qui seront installés par le script :
 
 - `stratux` : Système de surveillance du trafic aérien basé sur Raspberry Pi, utilisant des récepteurs SDR pour recevoir les signaux ADS-B et UAT. Il fournit des informations sur le trafic aérien aux pilotes.
 
-- `radiosonde_auto_rx ` : Outil automatisé pour recevoir et décoder les données des radiosondes météorologiques. Il permet de suivre et d'analyser les données météorologiques transmises par les ballons-sondes.
+- `radiosonde_auto_rx` : Outil automatisé pour recevoir et décoder les données des radiosondes météorologiques. Il permet de suivre et d'analyser les données météorologiques transmises par les ballons-sondes.
 
 ## ⚠️ Avertissement
 
