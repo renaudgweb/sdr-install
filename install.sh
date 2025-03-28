@@ -40,10 +40,12 @@ install_packages() {
     echo "Les paquets APT sont à jour ✅️"
 
     local packages=(
-        git autoconf libtool automake ccze bmon cmake build-essential 
-        libusb-1.0-0-dev rtl-sdr librtlsdr-dev zlib1g-dev
-        libsndfile1-dev libxml2-dev lame libsox-fmt-mp3 rtl-433 udev
-        lsof qrx-sdr htop libjansson-dev libav-tools sox oggfwd
+        git autoconf libtool automake bmon cmake build-essential 
+        libusb-1.0-0-dev rtl-sdr librtlsdr-dev zlib1g-dev gnuradio
+        libsndfile1-dev libxml2-dev lame libsox-fmt-mp3 rtl-433
+        udev lsof gqrx-sdr libjansson-dev libav-tools sox oggfwd
+        pkg-config python-docutils libcppunit-dev swig doxygen liblog4cpp5-dev
+        python-scipy python-gtk2 gnuradio-dev gr-osmosdr libosmocore-dev
     )
 
     sudo apt install -y "${packages[@]}"
@@ -142,12 +144,43 @@ install_kalibrate_rtl() {
 }
 
 install_pifmrds() {
-    cd $HOME/Documents/sdr
-    git clone https://github.com/ChristopheJacquet/PiFmRds.git
+    cd $HOME/Documents/sdr && git clone https://github.com/ChristopheJacquet/PiFmRds.git
     cd PiFmRds/src
     make clean
     make
     echo "PiFMRDS est installé ✅️\n"
+}
+
+install_gr_gsm() {
+    cd $HOME/Documents/sdr && git clone https://gitea.osmocom.org/sdr/gr-gsm
+    cd gr-gsm
+    mkdir build
+    cd build
+    cmake ..
+    mkdir $HOME/.grc_gnuradio/ $HOME/.gnuradio/
+    make
+    sudo make install
+    sudo ldconfig
+}
+
+install_dump1090() {
+    cd $HOME/Documents/sdr && git clone https://github.com/MalcolmRobb/dump1090.git
+    cd dump1090
+    make
+}
+
+install_radiosonde() {
+    cd $HOME/Documents/sdr && git clone https://github.com/projecthorus/radiosonde_auto_rx.git
+    cd radiosonde_auto_rx
+    pip install -r requirements.txt
+    cp config/station.cfg.example config/station.cfg
+}
+
+install_stratux() {
+    cd $HOME/Documents/sdr && git clone https://github.com/cyoung/stratux.git
+    cd stratux
+    make all
+    sudo make install
 }
 
 udev_install() {
@@ -166,6 +199,10 @@ main_install() {
     install_multimon_ng
     install_kalibrate_rtl
     install_pifmrds
+    install_gr_gsm
+    install_dump1090
+    install_radiosonde
+    install_stratux
     udev_install
 
     sudo apt update && sudo apt -y autoremove && sudo apt -y clean
