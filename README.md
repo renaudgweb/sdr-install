@@ -15,11 +15,15 @@ sdr linux installation
 
 1. 🛠️ Donnez les permissions d'exécution au script :
 
-`sudo chmod +x install.sh`
+```bash
+sudo chmod +x install.sh
+```
 
 2. Exécutez le script d'installation :
 
-`./install.sh`
+```bash
+./install.sh
+```
 
 ## 📦 Paquets Installés
 
