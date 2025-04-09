@@ -43,9 +43,9 @@ install_packages() {
         git autoconf libtool automake bmon cmake build-essential 
         libusb-1.0-0-dev rtl-sdr librtlsdr-dev zlib1g-dev gnuradio
         libsndfile1-dev libxml2-dev lame libsox-fmt-mp3 rtl-433
-        udev lsof gqrx-sdr libjansson-dev libav-tools sox oggfwd
-        pkg-config python-docutils libcppunit-dev swig doxygen liblog4cpp5-dev
-        python-scipy python-gtk2 gnuradio-dev gr-osmosdr libosmocore-dev
+        udev lsof gqrx-sdr libjansson-dev ffmpeg sox oggfwd
+        pkg-config libcppunit-dev swig doxygen liblog4cpp5-dev
+        gnuradio-dev gr-osmosdr libosmocore-dev
     )
 
     sudo apt install -y "${packages[@]}"
