@@ -77,7 +77,10 @@ download_and_install() {
     fi
 
     # Extraire l'archive
-    local extracted_dir=$(tar -xzf "$tmp_dir/$tarball_name" -C "$tmp_dir" | grep -o '^[^/]*' | head -n 1)
+    tar -xzf "$tmp_dir/$tarball_name" -C "$tmp_dir"
+
+    # Trouver le nom du dossier extrait
+    local extracted_dir=$(find "$tmp_dir" -mindepth 1 -maxdepth 1 -type d | head -n 1)
 
     if [[ -z "$extracted_dir" ]]; then
         echo "Erreur : Impossible d'extraire l'archive."
@@ -86,7 +89,7 @@ download_and_install() {
 
     # Supprimer l'ancien répertoire d'installation et déplacer les fichiers extraits
     rm -rf "$install_dir"
-    mv "$tmp_dir/$extracted_dir" "$install_dir"
+    mv "$extracted_dir" "$install_dir"
     cd "$install_dir"
     # Nettoyage après installation
     rm -rf "$tmp_dir"
@@ -101,7 +104,7 @@ install_libacars() {
 	make
 	sudo make install
 	sudo ldconfig
-	echo "libacars2 est installée ✅️ (version: $(decode_acars_apps -v))\n"
+	echo -e "libacars2 est installée ✅️ (version: $(decode_acars_apps -v))\n"
 }
 
 install_acarsdec() {
@@ -123,7 +126,7 @@ install_multimon_ng() {
 	cmake ..
 	make
 	sudo make install
-	echo "Multimon-ng est installée ✅️ (version: $(multimon-ng -V))\n"
+	echo -e "Multimon-ng est installée ✅️ (version: $(multimon-ng -V))\n"
 }
 
 install_kalibrate_rtl() {
@@ -140,7 +143,7 @@ install_kalibrate_rtl() {
     cd kalibrate-rtl-master
     ./bootstrap && CXXFLAGS='-W -Wall -O3' ./configure && make
     rm "$install_dir/master.zip"
-    echo "Kalibrate est installé ✅️ (version: $(kal -v))\n"
+    echo -e "Kalibrate est installé ✅️ (version: $(kal -v))\n"
 }
 
 install_pifmrds() {
@@ -148,7 +151,7 @@ install_pifmrds() {
     cd PiFmRds/src
     make clean
     make
-    echo "PiFMRDS est installé ✅️\n"
+    echo -e "PiFMRDS est installé ✅️\n"
 }
 
 install_gr_gsm() {
@@ -161,12 +164,14 @@ install_gr_gsm() {
     make
     sudo make install
     sudo ldconfig
+    echo -e "gr-gsm est installées ✅️\n"
 }
 
 install_dump1090() {
     cd $HOME/Documents/sdr && git clone https://github.com/MalcolmRobb/dump1090.git
     cd dump1090
     make
+    echo -e "Dump1090 est installées ✅️\n"
 }
 
 install_radiosonde() {
@@ -174,6 +179,7 @@ install_radiosonde() {
     cd radiosonde_auto_rx
     pip install -r requirements.txt
     cp config/station.cfg.example config/station.cfg
+    echo -e "Radiosonde est installées ✅️\n"
 }
 
 install_stratux() {
@@ -181,6 +187,7 @@ install_stratux() {
     cd stratux
     make all
     sudo make install
+    echo -e "Stratux est installées ✅️\n"
 }
 
 udev_install() {
@@ -188,7 +195,7 @@ udev_install() {
     sudo udevadm control --reload-rules
     sudo udevadm trigger
     usermod -aG plugdev ${SUDO_USER:-$USER}
-    echo "rtl-sdr rules installées ✅️\n"
+    echo -e "rtl-sdr rules installées ✅️\n"
 }
 
 main_install() {
