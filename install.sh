@@ -104,7 +104,12 @@ install_libacars() {
 	make
 	sudo make install
 	sudo ldconfig
-	echo -e "libacars2 est installée ✅️ (version: $(decode_acars_apps -v))\n"
+
+	if command -v decode_acars_apps &>/dev/null; then
+        echo -e "libacars2 est installée ✅️ (version: $(decode_acars_apps -v))\n"
+    else
+        echo -e "libacars2 est installée ✅️ (commande decode_acars_apps non trouvée)\n"
+    fi
 }
 
 install_acarsdec() {
@@ -115,7 +120,12 @@ install_acarsdec() {
 	cmake .. -Drtl=ON
 	make
 	sudo make install
-	echo "ACARSDec est installée ✅️ (version: $(acarsdec --version))\n"
+
+    if command -v decode_acars_apps &>/dev/null; then
+        echo -e "ACARSDec est installée ✅️ (version: $(acarsdec --version))\n"
+    else
+        echo -e "libacars2 est installée ✅️ (commande acarsdec non trouvée)\n"
+    fi
 }
 
 install_multimon_ng() {
@@ -126,7 +136,12 @@ install_multimon_ng() {
 	cmake ..
 	make
 	sudo make install
-	echo -e "Multimon-ng est installée ✅️ (version: $(multimon-ng -V))\n"
+
+    if command -v decode_acars_apps &>/dev/null; then
+        echo -e "Multimon-ng est installée ✅️ (version: $(multimon-ng -V))\n"
+    else
+        echo -e "libacars2 est installée ✅️ (commande multimon-ng non trouvée)\n"
+    fi
 }
 
 install_kalibrate_rtl() {
@@ -143,7 +158,12 @@ install_kalibrate_rtl() {
     cd kalibrate-rtl-master
     ./bootstrap && CXXFLAGS='-W -Wall -O3' ./configure && make
     rm "$install_dir/master.zip"
-    echo -e "Kalibrate est installé ✅️ (version: $(kal -v))\n"
+
+    if command -v decode_acars_apps &>/dev/null; then
+        echo -e "Kalibrate est installé ✅️ (version: $(kal -v))\n"
+    else
+        echo -e "libacars2 est installée ✅️ (commande kal non trouvée)\n"
+    fi
 }
 
 install_pifmrds() {
